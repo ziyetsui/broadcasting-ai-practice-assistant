@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私人普通话播音教练 - AI练习助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wavesurfer.js@7"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部导航 -->
+        <header class="header">
+            <div class="logo">
+                <h1>🎙️ 私人普通话播音教练</h1>
+                <p>AI驱动的专业播音练习助手</p>
+            </div>
+            <div class="challenge-progress">
+                <div class="progress-info">
+                    <span class="day-counter">第 <span id="currentDay">1</span> 天</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text"><span id="completedDays">0</span>/100 天</span>
+                </div>
+                <button class="fullscreen-btn" onclick="toggleFullscreen()" title="切换全屏">
+                    <span id="fullscreenIcon">⛶</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 欢迎界面 -->
+            <section id="welcomeSection" class="section active">
+                <div class="welcome-card">
+                    <h2>欢迎来到您的私人播音教练！</h2>
+                    <p>我是您的AI播音教练，采用"先分析范本，后对比练习"的两阶段学习模式：</p>
+                    <ul class="feature-list">
+                        <li>📊 <strong>分析学习范本</strong>：深度分析B站新闻视频的音调曲线、语速、停连等专业数据</li>
+                        <li>🎯 <strong>对比练习反馈</strong>：将您的跟读录音与原声进行多维度对比分析</li>
+                        <li>📈 <strong>可视化对比</strong>：直观展示音调曲线差异，精准定位问题</li>
+                        <li>🏆 <strong>100天挑战</strong>：游戏化闯关机制，每日坚持练习，成就专业播音员</li>
+                    </ul>
+                    <button class="cta-button" onclick="startLearning()">开始我的播音之旅</button>
+                </div>
+            </section>
+
+            <!-- 视频选择界面 -->
+            <section id="videoSection" class="section">
+                <div class="video-selector">
+                    <h2>选择学习视频</h2>
+                    <div class="video-grid" id="videoGrid">
+                        <!-- 视频卡片将通过JavaScript动态生成 -->
+                        <div class="video-card" data-video="news1">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 时政要闻</h3>
+                            <p>标准新闻播报，适合基础练习</p>
+                            <button class="select-video-btn" onclick="selectVideo('news1')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news2">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 经济报道</h3>
+                            <p>专业经济新闻，提升专业度</p>
+                            <button class="select-video-btn" onclick="selectVideo('news2')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news3">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 社会新闻</h3>
+                            <p>民生新闻播报，增强亲和力</p>
+                            <button class="select-video-btn" onclick="selectVideo('news3')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news4">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 国际新闻</h3>
+                            <p>国际时事播报，提升国际视野</p>
+                            <button class="select-video-btn" onclick="selectVideo('news4')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news5">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 科技新闻</h3>
+                            <p>科技创新报道，专业术语练习</p>
+                            <button class="select-video-btn" onclick="selectVideo('news5')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news6">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 文化新闻</h3>
+                            <p>文化传承报道，提升文化素养</p>
+                            <button class="select-video-btn" onclick="selectVideo('news6')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news7">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 体育新闻</h3>
+                            <p>体育赛事播报，增强节奏感</p>
+                            <button class="select-video-btn" onclick="selectVideo('news7')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news8">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 环保新闻</h3>
+                            <p>环保主题报道，提升责任感</p>
+                            <button class="select-video-btn" onclick="selectVideo('news8')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news9">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 教育新闻</h3>
+                            <p>教育发展报道，专业教育术语</p>
+                            <button class="select-video-btn" onclick="selectVideo('news9')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news10">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 医疗新闻</h3>
+                            <p>医疗健康报道，专业医学术语</p>
+                            <button class="select-video-btn" onclick="selectVideo('news10')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news11">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 农业新闻</h3>
+                            <p>农业发展报道，三农政策解读</p>
+                            <button class="select-video-btn" onclick="selectVideo('news11')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news12">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 交通新闻</h3>
+                            <p>交通建设报道，基础设施发展</p>
+                            <button class="select-video-btn" onclick="selectVideo('news12')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news13">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 军事新闻</h3>
+                            <p>国防军事报道，提升专业素养</p>
+                            <button class="select-video-btn" onclick="selectVideo('news13')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news14">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 外交新闻</h3>
+                            <p>外交政策解读，国际关系分析</p>
+                            <button class="select-video-btn" onclick="selectVideo('news14')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news15">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 法治新闻</h3>
+                            <p>法治建设报道，法律知识普及</p>
+                            <button class="select-video-btn" onclick="selectVideo('news15')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news16">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 金融新闻</h3>
+                            <p>金融市场分析，财经政策解读</p>
+                            <button class="select-video-btn" onclick="selectVideo('news16')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news17">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 能源新闻</h3>
+                            <p>能源发展报道，绿色转型政策</p>
+                            <button class="select-video-btn" onclick="selectVideo('news17')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news18">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 旅游新闻</h3>
+                            <p>旅游产业发展，文化推广报道</p>
+                            <button class="select-video-btn" onclick="selectVideo('news18')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news19">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 房地产新闻</h3>
+                            <p>房地产市场分析，住房政策解读</p>
+                            <button class="select-video-btn" onclick="selectVideo('news19')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news20">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 食品安全新闻</h3>
+                            <p>食品安全监管，健康生活指导</p>
+                            <button class="select-video-btn" onclick="selectVideo('news20')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news21">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 网络安全新闻</h3>
+                            <p>网络安全防护，数字经济发展</p>
+                            <button class="select-video-btn" onclick="selectVideo('news21')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news22">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 就业新闻</h3>
+                            <p>就业政策解读，人才发展报道</p>
+                            <button class="select-video-btn" onclick="selectVideo('news22')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news23">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 养老新闻</h3>
+                            <p>养老服务发展，社会保障政策</p>
+                            <button class="select-video-btn" onclick="selectVideo('news23')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news24">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 青年新闻</h3>
+                            <p>青年发展政策，创新创业报道</p>
+                            <button class="select-video-btn" onclick="selectVideo('news24')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news25">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 妇女新闻</h3>
+                            <p>妇女权益保障，性别平等发展</p>
+                            <button class="select-video-btn" onclick="selectVideo('news25')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news26">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 儿童新闻</h3>
+                            <p>儿童保护政策，教育发展报道</p>
+                            <button class="select-video-btn" onclick="selectVideo('news26')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news27">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 残疾人新闻</h3>
+                            <p>残疾人权益保障，无障碍环境建设</p>
+                            <button class="select-video-btn" onclick="selectVideo('news27')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news28">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 扶贫新闻</h3>
+                            <p>脱贫攻坚成果，乡村振兴发展</p>
+                            <button class="select-video-btn" onclick="selectVideo('news28')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news29">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 科技创新新闻</h3>
+                            <p>科技创新成果，研发投入分析</p>
+                            <button class="select-video-btn" onclick="selectVideo('news29')">选择此视频</button>
+                        </div>
+                        <div class="video-card" data-video="news30">
+                            <div class="video-thumbnail">
+                                <div class="play-icon">▶️</div>
+                            </div>
+                            <h3>新闻联播 - 文化传承新闻</h3>
+                            <p>传统文化保护，非遗传承发展</p>
+                            <button class="select-video-btn" onclick="selectVideo('news30')">选择此视频</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 视频播放和分析界面 -->
+            <section id="analysisSection" class="section">
+                <div class="analysis-container">
+                    <div class="video-player">
+                        <div class="video-wrapper">
+                            <iframe id="bilibiliPlayer" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-controls">
+                            <button class="control-btn" onclick="analyzeOriginal()">📊 分析原声</button>
+                            <button class="control-btn" onclick="startFollowReading()" id="startFollowReadingBtn">🎤 开始跟读</button>
+                        </div>
+                    </div>
+
+                    <div class="analysis-results" id="analysisResults">
+                        <h3>原声分析结果</h3>
+                        
+                        <!-- 句子级别的音调曲线分析 -->
+                        <div class="sentence-analysis-section">
+                            <div id="sentenceAnalysisContainer" class="sentence-charts-container">
+                                <!-- 句子级别的图表将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 跟读练习界面 -->
+            <section id="followReadingSection" class="section">
+                <div class="follow-reading-container">
+                    <div class="follow-reading-header">
+                        <h2>跟读练习</h2>
+                        <div class="practice-info">
+                            <span class="current-sentence">句子 <span id="currentSentenceNum">1</span> / <span id="totalSentences">4</span></span>
+                            <span class="practice-count">第 <span id="practiceCount">1</span> 次练习</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 原声曲线图 - 横向铺满 -->
+                    <div class="original-audio-curve-fullwidth">
+                        <h4>原声曲线图</h4>
+                        <div class="curve-container-fullwidth">
+                            <canvas id="originalAudioCanvas" width="800" height="150"></canvas>
+                        </div>
+                        <div class="curve-info">
+                            <div class="curve-meta">
+                                <span class="duration">时长: <span id="originalDuration">3.3s</span></span>
+                                <span class="pause-type" id="originalPauseType">短停</span>
+                                <span class="keywords">关键词: <span id="originalKeywords">际遇, 使命</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="follow-reading-content">
+                        <!-- 左侧：视频和当前句子 -->
+                        <div class="reading-left">
+                            <div class="video-player-small">
+                                <iframe id="followReadingPlayer" width="100%" height="250" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <div class="current-sentence-display">
+                                <h3>当前句子</h3>
+                                <div class="sentence-text-large" id="currentSentenceText">
+                                    "一代人有一代人的际遇，一代人有一代人的使命。"
+                                </div>
+                                
+                                <div class="sentence-tips" id="sentenceTips">
+                                    <div class="tip-item">
+                                        <span class="tip-label">停顿提示：</span>
+                                        <span class="tip-content">在逗号处稍作停顿</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <span class="tip-label">重音提示：</span>
+                                        <span class="tip-content">"际遇"、"使命"需要重读</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右侧：录音和分析 -->
+                        <div class="reading-right">
+                            <div class="recording-area">
+                                <div class="recording-visualizer">
+                                    <canvas id="recordingCanvas"></canvas>
+                                </div>
+                                <div class="recording-controls">
+                                    <button id="recordBtn" class="record-btn" onclick="toggleRecording()">
+                                        <span class="record-icon">🎤</span>
+                                        <span class="record-text">开始录音</span>
+                                    </button>
+                                    <div class="recording-timer" id="recordingTimer">00:00</div>
+                                    
+                                    <!-- 回放控制 -->
+                                    <div class="playback-controls" id="playbackControls" style="display: none;">
+                                        <button id="playbackBtn" class="playback-btn" onclick="playbackRecording()">
+                                            <span class="playback-icon">▶️</span>
+                                            <span class="playback-text">回放录音</span>
+                                        </button>
+                                        <audio id="playbackAudio" controls style="display: none;"></audio>
+                                    </div>
+                                </div>
+                                <div class="recording-tips">
+                                    <p>💡 点击"开始录音"开始录制，完成后点击"停止录音"，然后可以回放录音</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 实时诊断结果 -->
+                            <div class="diagnosis-results" id="diagnosisResults">
+                                <h4>实时诊断</h4>
+                                <div class="diagnosis-content" id="diagnosisContent">
+                                    <p>完成录音后将显示诊断结果</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="follow-reading-actions">
+                        <button class="action-btn secondary" onclick="backToAnalysis()">返回分析</button>
+                        <button class="action-btn secondary" onclick="previousSentence()" id="prevBtn" disabled>上一句</button>
+                        <button class="action-btn primary" onclick="nextSentence()" id="nextBtn">下一句</button>
+                        <button class="action-btn primary" onclick="submitAllPractice()" id="submitAllBtn" disabled>完成练习</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 录音界面（保留用于其他功能） -->
+            <section id="recordingSection" class="section">
+                <div class="recording-container">
+                    <h2>录音练习</h2>
+                    <div class="recording-area">
+                        <div class="recording-visualizer">
+                            <canvas id="recordingCanvas2"></canvas>
+                        </div>
+                        <div class="recording-controls">
+                            <button id="recordBtn2" class="record-btn" onclick="toggleRecording2()">
+                                <span class="record-icon">🎤</span>
+                                <span class="record-text">开始录音</span>
+                            </button>
+                            <div class="recording-timer" id="recordingTimer2">00:00</div>
+                        </div>
+                        <div class="recording-tips">
+                            <p>💡 录音提示：请保持安静环境，距离麦克风15-20厘米，清晰朗读</p>
+                        </div>
+                    </div>
+                    <div class="recording-actions">
+                        <button class="action-btn secondary" onclick="backToAnalysis()">返回分析</button>
+                        <button class="action-btn primary" id="submitBtn2" onclick="submitRecording2()" disabled>提交录音</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 对比分析结果界面 -->
+            <section id="comparisonSection" class="section">
+                <div class="comparison-container">
+                    <h2>练习分析报告</h2>
+                    
+                    <!-- 总体评价 -->
+                    <div class="evaluation-card">
+                        <h3>1. 总体评价</h3>
+                        <div class="evaluation-content" id="overallEvaluation">
+                            <p>正在分析您的录音，请稍候...</p>
+                        </div>
+                    </div>
+
+                    <!-- 音调曲线对比图 -->
+                    <div class="comparison-chart">
+                        <h3>2. 音调曲线对比图</h3>
+                        <canvas id="comparisonChart"></canvas>
+                        <div class="chart-analysis" id="chartAnalysis">
+                            <p>分析中...</p>
+                        </div>
+                    </div>
+
+                    <!-- 详细分析与建议 -->
+                    <div class="detailed-analysis">
+                        <h3>3. 详细分析与建议</h3>
+                        <div class="analysis-sections">
+                            <div class="analysis-section">
+                                <h4>字词纠正</h4>
+                                <div class="correction-list" id="correctionList">
+                                    <p>分析中...</p>
+                                </div>
+                            </div>
+                            <div class="analysis-section">
+                                <h4>节奏/语调建议</h4>
+                                <div class="rhythm-suggestions" id="rhythmSuggestions">
+                                    <p>分析中...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 闯关成功信息 -->
+                    <div class="challenge-success">
+                        <h3>4. 闯关成功信息</h3>
+                        <div class="success-message" id="successMessage">
+                            <p>正在更新您的挑战进度...</p>
+                        </div>
+                    </div>
+
+                    <div class="comparison-actions">
+                        <button class="action-btn secondary" onclick="startNewPractice()">继续练习</button>
+                        <button class="action-btn primary" onclick="viewProgress()">查看进度</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 进度查看界面 -->
+            <section id="progressSection" class="section">
+                <div class="progress-container">
+                    <h2>我的播音挑战进度</h2>
+                    <div class="progress-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalDays">0</div>
+                            <div class="stat-label">已完成天数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="streakDays">0</div>
+                            <div class="stat-label">连续天数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="remainingDays">100</div>
+                            <div class="stat-label">剩余天数</div>
+                        </div>
+                    </div>
+                    <div class="progress-calendar">
+                        <h3>练习日历</h3>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- 日历将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    <div class="progress-actions">
+                        <button class="action-btn primary" onclick="backToWelcome()">返回首页</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部信息 -->
+        <footer class="footer">
+            <p>&copy; 2024 私人普通话播音教练 - AI练习助手</p>
+            <p>让每一次练习都成为进步</p>
+        </footer>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="audio-analysis.js"></script>
+    <script src="challenge-system.js"></script>
+    <script src="bilibili-integration.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

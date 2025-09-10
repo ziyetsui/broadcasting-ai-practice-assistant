@@ -1,0 +1,26 @@
+{
+  "name": "broadcasting-ai-practice-assistant",
+  "version": "1.0.0",
+  "description": "播音主持AI练习助手 - 提供专业的播音主持练习和语音分析功能",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "播音主持",
+    "AI练习",
+    "语音分析",
+    "跟读练习",
+    "语音训练"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/broadcasting-ai-practice-assistant.git"
+  }
+}
