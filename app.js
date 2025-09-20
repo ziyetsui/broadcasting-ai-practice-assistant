@@ -325,6 +325,11 @@ const videoConfigs = {
         title: "播音艺术表现",
         bvid: "BV1frazzzETz",
         description: "播音艺术表现技巧和情感传达"
+    },
+    custom33: {
+        title: "专业播音训练",
+        bvid: "BV1C6YbzWETC",
+        description: "专业播音技巧训练和实践应用"
     }
 };
 
