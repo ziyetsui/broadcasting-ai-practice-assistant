@@ -169,32 +169,68 @@ const videoConfigs = {
     custom1: {
         title: "播音练习视频",
         bvid: "BV1rM4m1y7AX",
-        description: "专业播音练习内容，适合跟读训练"
+        description: "专业播音练习内容，适合跟读训练",
+        sentences: [
+            "播音主持是一门综合性很强的艺术。",
+            "它要求主持人具备良好的语言表达能力和声音条件。",
+            "通过科学的训练方法，可以有效提升播音技巧。",
+            "持之以恒的练习是成功的关键。"
+        ]
     },
     custom2: {
         title: "发声技巧训练", 
         bvid: "BV18Z421N7Nj",
-        description: "发声技巧和语音训练课程"
+        description: "发声技巧和语音训练课程",
+        sentences: [
+            "正确的发声方法是播音的基础。",
+            "腹式呼吸能够提供充足的气息支撑。",
+            "口腔共鸣和胸腔共鸣要协调配合。",
+            "声音的穿透力来自于正确的发声位置。"
+        ]
     },
     custom3: {
         title: "语音表达技巧",
         bvid: "BV1ux4y147c2", 
-        description: "语音表达和播音技巧提升"
+        description: "语音表达和播音技巧提升",
+        sentences: [
+            "语音表达要做到清晰准确、生动自然。",
+            "重音和停顿是表达情感的重要手段。",
+            "语调的变化能够增强语言的感染力。",
+            "节奏的把握体现播音员的专业水准。"
+        ]
     },
     custom4: {
         title: "播音基础训练",
         bvid: "BV12b421Y7JC",
-        description: "播音主持基础发声训练"
+        description: "播音主持基础发声训练",
+        sentences: [
+            "播音主持的基础是良好的发声技巧。",
+            "正确的呼吸方法是发声的根本。",
+            "口腔开度和舌位影响着声音的清晰度。",
+            "坚持练习是提高播音水平的唯一途径。"
+        ]
     },
     custom5: {
         title: "语音发声练习",
         bvid: "BV1Hf42127SU",
-        description: "专业语音发声技巧练习"
+        description: "专业语音发声技巧练习",
+        sentences: [
+            "声音是播音员最重要的工具。",
+            "气息的控制决定了声音的稳定性。",
+            "共鸣的运用能够增强声音的美感。",
+            "发声练习需要持续不断的坚持。"
+        ]
     },
     custom6: {
         title: "播音技巧进阶",
         bvid: "BV12b421e78Q",
-        description: "进阶播音技巧和表达训练"
+        description: "进阶播音技巧和表达训练",
+        sentences: [
+            "进阶播音技巧包括语调的精确控制。",
+            "情感的表达需要声音与内容的完美结合。",
+            "专业播音员要具备敏锐的语感。",
+            "不断的学习和实践是提升的关键。"
+        ]
     },
     custom7: {
         title: "语音表现力训练",
@@ -449,7 +485,7 @@ async function analyzeOriginal() {
         await simulateOriginalAnalysis();
         
         // 生成专业的播音分析数据
-        const analysisData = generateProfessionalBroadcastData();
+        const analysisData = generateProfessionalBroadcastData(currentVideo);
         
         // 渲染句子级别的音调曲线
         renderSentenceCharts(analysisData.sentenceData);
@@ -483,7 +519,7 @@ async function startFollowReading() {
             originalAudioData = generateMockAudioData();
             
             // 同时生成分析数据用于显示
-            const analysisData = generateProfessionalBroadcastData();
+            const analysisData = generateProfessionalBroadcastData(currentVideo);
             renderSentenceCharts(analysisData.sentenceData);
         }
         
@@ -509,7 +545,7 @@ async function startFollowReading() {
 function initializeFollowReading() {
     currentSentenceIndex = 0;
     practiceCount = 1;
-    sentenceData = generateProfessionalBroadcastData().sentenceData;
+    sentenceData = generateProfessionalBroadcastData(currentVideo).sentenceData;
     
     // 更新界面
     updateFollowReadingUI();
@@ -1406,19 +1442,25 @@ function backToWelcome() {
 }
 
 // 生成专业的播音分析数据
-function generateProfessionalBroadcastData() {
+function generateProfessionalBroadcastData(videoId = null) {
     const labels = [];
     const values = [];
     const annotations = [];
     const pauseMarkers = [];
     
-    // 以句号为单位的完整句子
-    const fullSentences = [
+    // 根据当前视频获取对应的句子
+    let fullSentences = [
         "一代人有一代人的际遇，一代人有一代人的使命。",
         "新时代的中国青年把个人梦想融入到民族复兴的伟大事业中，以实际行动肩负起时代重任，锲而不舍、接续奋斗，展现了新时代的青春担当。",
         "从今天起，《新闻联播》推出系列报道《奋斗者正青春》，讲述在青春赛道上奋力奔跑的成长故事，展现新时代中国青年奋发进取的精神风貌。",
         "今天，我们首先来认识中国青年五四奖章获奖者黄震。"
     ];
+    
+    // 如果指定了视频ID且该视频有自定义句子，则使用自定义句子
+    if (videoId && videoConfigs[videoId] && videoConfigs[videoId].sentences) {
+        fullSentences = videoConfigs[videoId].sentences;
+        console.log(`使用视频 ${videoId} 的自定义句子:`, fullSentences);
+    }
     
     // 将完整句子转换为分析数据
     const segments = [];
