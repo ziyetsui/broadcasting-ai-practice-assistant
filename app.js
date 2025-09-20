@@ -414,6 +414,10 @@ function initializeApp() {
 // 开始学习
 function startLearning() {
     showSection('videoSection');
+    // 确保在显示视频选择界面时生成视频卡片
+    setTimeout(() => {
+        generateVideoCards();
+    }, 100);
 }
 
 // 选择视频
