@@ -164,6 +164,22 @@ const videoConfigs = {
         title: "新闻联播 - 文化传承新闻",
         bvid: "BV1XA41197xo",
         description: "传统文化保护，非遗传承发展"
+    },
+    // 新添加的视频
+    custom1: {
+        title: "播音练习视频",
+        bvid: "BV1rM4m1y7AX",
+        description: "专业播音练习内容，适合跟读训练"
+    },
+    custom2: {
+        title: "发声技巧训练", 
+        bvid: "BV18Z421N7Nj",
+        description: "发声技巧和语音训练课程"
+    },
+    custom3: {
+        title: "语音表达技巧",
+        bvid: "BV1ux4y147c2", 
+        description: "语音表达和播音技巧提升"
     }
 };
 
