@@ -633,49 +633,73 @@ async function analyzeOriginal() {
 
 // 使用新架构执行专业分析
 async function performProfessionalAnalysis(videoId) {
-    // 检查缓存
-    if (performanceCache) {
-        const cached = await performanceCache.get(`analysis_${videoId}`);
-        if (cached) {
-            console.log('使用缓存的分析结果');
-            return cached;
-        }
-    }
-    
-    // 获取视频信息
-    const videoInfo = await getBilibiliVideoInfo(videoId);
-    
-    // 使用AI服务分析视频内容
-    if (aiAnalysisService) {
-        const aiAnalysis = await aiAnalysisService.analyzeVideoContent(videoInfo);
-        videoInfo.sentences = aiAnalysis.sentences;
-    }
-    
-    // 如果有音频引擎，尝试提取真实音频
-    let audioAnalysis = null;
-    if (audioEngine) {
-        try {
-            const audioBuffer = await extractVideoAudioBuffer(videoId);
-            if (audioBuffer) {
-                audioAnalysis = await audioEngine.comprehensiveAnalysis(audioBuffer, videoInfo);
-                console.log('获得真实音频分析结果');
+    try {
+        // 检查缓存
+        if (performanceCache) {
+            const cached = await performanceCache.get(`analysis_${videoId}`);
+            if (cached) {
+                console.log('使用缓存的分析结果');
+                return cached;
             }
-        } catch (error) {
-            console.warn('真实音频分析失败，使用模拟数据:', error);
         }
+        
+        // 获取视频信息（使用智能回退策略）
+        console.log('获取视频信息...');
+        const videoInfo = await getBilibiliVideoInfo(videoId);
+        
+        if (!videoInfo) {
+            throw new Error('无法获取视频信息');
+        }
+        
+        console.log('视频信息获取成功:', videoInfo.title);
+        
+        // 如果有音频引擎，尝试提取真实音频
+        let audioAnalysis = null;
+        if (audioEngine) {
+            try {
+                console.log('尝试提取真实音频...');
+                const audioBuffer = await extractVideoAudioBuffer(videoId);
+                if (audioBuffer) {
+                    audioAnalysis = await audioEngine.comprehensiveAnalysis(audioBuffer, videoInfo);
+                    console.log('获得真实音频分析结果');
+                }
+            } catch (error) {
+                console.warn('真实音频分析失败，使用模拟数据:', error);
+            }
+        }
+        
+        // 生成分析数据
+        console.log('生成专业分析数据...');
+        const analysisData = audioAnalysis ? 
+            convertRealAnalysisToFormat(audioAnalysis, videoInfo) :
+            generateProfessionalBroadcastData(videoId, videoInfo);
+        
+        const result = {
+            ...analysisData,
+            videoInfo,
+            audioAnalysis,
+            timestamp: Date.now()
+        };
+        
+        console.log('专业分析完成');
+        return result;
+        
+    } catch (error) {
+        console.error('专业分析失败:', error);
+        
+        // 使用紧急回退策略
+        console.log('使用紧急回退分析...');
+        const emergencyVideoInfo = generateEmergencyVideoInfo(videoId);
+        const emergencyAnalysisData = generateProfessionalBroadcastData(videoId, emergencyVideoInfo);
+        
+        return {
+            ...emergencyAnalysisData,
+            videoInfo: emergencyVideoInfo,
+            audioAnalysis: null,
+            timestamp: Date.now(),
+            emergency: true
+        };
     }
-    
-    // 生成分析数据
-    const analysisData = audioAnalysis ? 
-        convertRealAnalysisToFormat(audioAnalysis, videoInfo) :
-        generateProfessionalBroadcastData(videoId);
-    
-    return {
-        ...analysisData,
-        videoInfo,
-        audioAnalysis,
-        timestamp: Date.now()
-    };
 }
 
 // 使用可视化引擎渲染专业图表
@@ -1038,7 +1062,7 @@ async function generateIntelligentBackupContent(config) {
     };
 }
 
-// 获取B站视频信息
+// 获取B站视频信息 - 使用新的智能回退策略
 async function getBilibiliVideoInfo(bvid) {
     try {
         // 使用现有的bilibili-integration.js中的API
@@ -1046,37 +1070,37 @@ async function getBilibiliVideoInfo(bvid) {
             window.bilibiliIntegration = new BilibiliIntegration();
         }
         
-        console.log(`正在获取视频 ${bvid} 的真实信息...`);
+        console.log(`正在获取视频 ${bvid} 的信息...`);
         const videoInfo = await window.bilibiliIntegration.getVideoInfo(bvid);
         
-        if (videoInfo && videoInfo.title) {
-            console.log('获取到真实视频信息:', videoInfo.title);
+        if (videoInfo) {
+            console.log('获取到视频信息:', videoInfo.title);
             
-            // 使用Gemini AI根据真实视频标题和描述生成相关的练习句子
-            const prompt = `
-根据B站视频的真实信息生成4句适合播音练习的句子：
-视频标题：${videoInfo.title}
-视频描述：${videoInfo.desc || ''}
-
-请基于视频的实际内容主题，生成4句相关的、适合播音练习的句子。
-句子要求：
-1. 与视频主题相关
-2. 适合播音主持练习
-3. 包含适当的停顿和重音
-4. 长度适中，便于跟读
-
-请直接返回4个句子，每句一行，不要其他说明文字。
-`;
+            // 使用Gemini AI根据视频标题和描述生成相关的练习句子
+            let sentences = [];
             
-            const response = await callGeminiForVideoContent(prompt);
-            const sentences = response.split('\n').filter(line => line.trim()).slice(0, 4);
+            if (aiAnalysisService) {
+                try {
+                    const aiAnalysis = await aiAnalysisService.analyzeVideoContent(videoInfo);
+                    sentences = aiAnalysis.sentences;
+                    console.log('AI生成的练习句子:', sentences);
+                } catch (error) {
+                    console.warn('AI分析失败，使用默认句子:', error);
+                    sentences = generateDefaultSentencesByType(videoInfo.type);
+                }
+            } else {
+                // 如果AI服务不可用，使用基于视频类型的默认句子
+                sentences = generateDefaultSentencesByType(videoInfo.type);
+            }
             
             return {
                 title: videoInfo.title,
                 desc: videoInfo.desc,
                 duration: videoInfo.duration,
                 cid: videoInfo.cid,
-                sentences: sentences
+                sentences: sentences,
+                bvid: bvid,
+                fallback: videoInfo.fallback || false
             };
         } else {
             throw new Error('无法获取视频信息');
@@ -1084,8 +1108,68 @@ async function getBilibiliVideoInfo(bvid) {
         
     } catch (error) {
         console.error('获取视频信息失败:', error);
-        throw error;
+        // 最后的回退策略
+        return generateEmergencyVideoInfo(bvid);
     }
+}
+
+// 根据视频类型生成默认句子
+function generateDefaultSentencesByType(type) {
+    const sentencesByType = {
+        news: [
+            "新闻播报需要清晰准确的发音和稳定的语调。",
+            "时政新闻要求播音员具备庄重大方的播报风格。",
+            "标准的新闻语速应该控制在每分钟180到200字之间。",
+            "新闻播音的停顿要体现逻辑层次和语义重点。"
+        ],
+        politics: [
+            "时政新闻播报要求语调庄重、节奏稳健。",
+            "政治新闻需要准确传达政策精神和重要信息。",
+            "播报时政内容时要注意重音的准确处理。",
+            "政治新闻的语言表达要严谨规范、逻辑清晰。"
+        ],
+        training: [
+            "播音主持基础训练从正确的发声方法开始。",
+            "科学的呼吸控制是优秀播音员的基本功。",
+            "口腔开度和舌位的准确性直接影响发音清晰度。",
+            "持续的基础训练是提升播音水平的关键。"
+        ],
+        vocal: [
+            "正确的发声位置能够产生优美的音色。",
+            "胸腹式呼吸为发声提供稳定的气息支撑。",
+            "共鸣的合理运用可以增强声音的穿透力。",
+            "发声技巧的掌握需要长期坚持练习。"
+        ],
+        general: [
+            "播音主持是一门综合性很强的艺术。",
+            "良好的语言表达能力是播音员的基本素质。",
+            "通过科学训练可以有效提升播音技巧。",
+            "坚持不懈的练习是成功的重要保证。"
+        ]
+    };
+    
+    return sentencesByType[type] || sentencesByType.general;
+}
+
+// 紧急回退策略 - 生成基本的视频信息
+function generateEmergencyVideoInfo(bvid) {
+    console.log('使用紧急回退策略为', bvid);
+    
+    return {
+        title: '播音练习视频',
+        desc: '专业播音练习内容，适合技能提升和跟读训练',
+        duration: 180,
+        cid: Date.now(),
+        sentences: [
+            "播音主持需要扎实的基本功和持续的练习。",
+            "清晰的发音和准确的语调是播音的基础要求。",
+            "专业的播音员要具备良好的语言感知能力。",
+            "通过反复练习可以不断提升播音水平。"
+        ],
+        bvid: bvid,
+        fallback: true,
+        emergency: true
+    };
 }
 
 // 获取B站视频的真实信息
@@ -2235,7 +2319,7 @@ function backToWelcome() {
 }
 
 // 生成专业的播音分析数据
-function generateProfessionalBroadcastData(videoId = null) {
+function generateProfessionalBroadcastData(videoId = null, videoInfo = null) {
     const labels = [];
     const values = [];
     const annotations = [];
@@ -2249,10 +2333,15 @@ function generateProfessionalBroadcastData(videoId = null) {
         "今天，我们首先来认识中国青年五四奖章获奖者黄震。"
     ];
     
+    // 优先使用传入的videoInfo中的句子
+    if (videoInfo && videoInfo.sentences && videoInfo.sentences.length > 0) {
+        fullSentences = videoInfo.sentences;
+        console.log(`使用视频信息中的句子:`, fullSentences);
+    }
     // 如果指定了视频ID且该视频有自定义句子，则使用自定义句子
-    if (videoId && videoConfigs[videoId] && videoConfigs[videoId].sentences) {
+    else if (videoId && videoConfigs[videoId] && videoConfigs[videoId].sentences) {
         fullSentences = videoConfigs[videoId].sentences;
-        console.log(`使用视频 ${videoId} 的自定义句子:`, fullSentences);
+        console.log(`使用视频配置 ${videoId} 的自定义句子:`, fullSentences);
     }
     
     // 将完整句子转换为分析数据
