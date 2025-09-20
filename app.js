@@ -538,29 +538,77 @@ async function analyzeRealBilibiliVideo(videoId) {
 // 获取B站视频信息
 async function getBilibiliVideoInfo(bvid) {
     try {
-        // 由于跨域限制，我们使用Gemini AI来模拟视频内容分析
-        const prompt = `
-请为B站视频 ${bvid} 生成4句适合播音练习的句子。
-这些句子应该：
-1. 符合播音主持的专业要求
-2. 包含适当的停顿和重音
-3. 长度适中，便于跟读练习
-4. 内容积极正面，适合练习
+        // 首先尝试获取视频的真实信息
+        const videoInfo = await fetchBilibiliVideoInfo(bvid);
+        
+        if (videoInfo && videoInfo.title) {
+            // 使用Gemini AI根据视频标题和描述生成相关的练习句子
+            const prompt = `
+根据B站视频信息生成4句适合播音练习的句子：
+视频标题：${videoInfo.title}
+视频描述：${videoInfo.desc || ''}
+
+请基于视频的实际内容主题，生成4句相关的、适合播音练习的句子。
+句子要求：
+1. 与视频主题相关
+2. 适合播音主持练习
+3. 包含适当的停顿和重音
+4. 长度适中，便于跟读
 
 请直接返回4个句子，每句一行，不要其他说明文字。
 `;
-        
-        const response = await callGeminiForVideoContent(prompt);
-        const sentences = response.split('\n').filter(line => line.trim()).slice(0, 4);
-        
-        return {
-            title: videoConfigs[bvid]?.title || '播音练习',
-            sentences: sentences
-        };
+            
+            const response = await callGeminiForVideoContent(prompt);
+            const sentences = response.split('\n').filter(line => line.trim()).slice(0, 4);
+            
+            return {
+                title: videoInfo.title,
+                desc: videoInfo.desc,
+                sentences: sentences
+            };
+        } else {
+            throw new Error('无法获取视频信息');
+        }
         
     } catch (error) {
         console.error('获取视频信息失败:', error);
         throw error;
+    }
+}
+
+// 获取B站视频的真实信息
+async function fetchBilibiliVideoInfo(bvid) {
+    try {
+        // 使用公开的B站API获取视频信息
+        const response = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Referer': 'https://www.bilibili.com/'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.code === 0 && data.data) {
+            return {
+                title: data.data.title,
+                desc: data.data.desc,
+                duration: data.data.duration,
+                owner: data.data.owner
+            };
+        } else {
+            throw new Error(data.message || '获取视频信息失败');
+        }
+        
+    } catch (error) {
+        console.warn('B站API调用失败，使用备用方案:', error.message);
+        // 如果API调用失败，返回null让系统使用预设内容
+        return null;
     }
 }
 
