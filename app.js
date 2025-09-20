@@ -579,36 +579,52 @@ async function getBilibiliVideoInfo(bvid) {
 // 获取B站视频的真实信息
 async function fetchBilibiliVideoInfo(bvid) {
     try {
-        // 使用公开的B站API获取视频信息
-        const response = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://www.bilibili.com/'
-            }
-        });
+        // 由于CORS限制，我们使用智能推断的方式
+        // 根据BV号和当前视频配置推断内容
+        const config = Object.values(videoConfigs).find(v => v.bvid === bvid);
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.code === 0 && data.data) {
+        if (config) {
+            // 使用Gemini AI根据视频标题生成相关内容
+            const prompt = `
+根据以下播音练习视频信息，生成适合的练习内容：
+视频标题：${config.title}
+视频描述：${config.description}
+
+请生成4句与该主题相关的、适合播音练习的专业句子。
+要求：
+1. 与视频主题高度相关
+2. 符合播音主持的专业标准
+3. 包含适当的停顿和重音
+4. 长度适中，便于跟读练习
+5. 内容专业且实用
+
+请直接返回4个句子，每句一行。
+`;
+            
+            const response = await callGeminiForVideoContent(prompt);
+            const sentences = response.split('\n').filter(line => line.trim()).slice(0, 4);
+            
             return {
-                title: data.data.title,
-                desc: data.data.desc,
-                duration: data.data.duration,
-                owner: data.data.owner
+                title: config.title,
+                desc: config.description,
+                sentences: sentences
             };
         } else {
-            throw new Error(data.message || '获取视频信息失败');
+            throw new Error('视频配置不存在');
         }
         
     } catch (error) {
-        console.warn('B站API调用失败，使用备用方案:', error.message);
-        // 如果API调用失败，返回null让系统使用预设内容
-        return null;
+        console.warn('智能内容生成失败，使用默认内容:', error.message);
+        return {
+            title: '播音练习',
+            desc: '专业播音练习内容',
+            sentences: [
+                "播音主持需要良好的语言表达能力。",
+                "正确的发声方法是播音的基础。",
+                "语调的变化能够增强语言的感染力。",
+                "持之以恒的练习是成功的关键。"
+            ]
+        };
     }
 }
 
