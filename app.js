@@ -165,7 +165,7 @@ const videoConfigs = {
         bvid: "BV1XA41197xo",
         description: "传统文化保护，非遗传承发展"
     },
-    // 新添加的视频
+    // 新添加的播音练习视频
     custom1: {
         title: "播音练习视频",
         bvid: "BV1rM4m1y7AX",
@@ -180,6 +180,151 @@ const videoConfigs = {
         title: "语音表达技巧",
         bvid: "BV1ux4y147c2", 
         description: "语音表达和播音技巧提升"
+    },
+    custom4: {
+        title: "播音基础训练",
+        bvid: "BV12b421Y7JC",
+        description: "播音主持基础发声训练"
+    },
+    custom5: {
+        title: "语音发声练习",
+        bvid: "BV1Hf42127SU",
+        description: "专业语音发声技巧练习"
+    },
+    custom6: {
+        title: "播音技巧进阶",
+        bvid: "BV12b421e78Q",
+        description: "进阶播音技巧和表达训练"
+    },
+    custom7: {
+        title: "语音表现力训练",
+        bvid: "BV1ci421i7Wm",
+        description: "提升语音表现力和感染力"
+    },
+    custom8: {
+        title: "播音节奏控制",
+        bvid: "BV1Si421v7Xd",
+        description: "播音节奏和语速控制技巧"
+    },
+    custom9: {
+        title: "语音情感表达",
+        bvid: "BV1ZS411w7pJ",
+        description: "语音情感表达和语调变化"
+    },
+    custom10: {
+        title: "播音语调训练",
+        bvid: "BV17Z421M7Fc",
+        description: "播音语调变化和重音处理"
+    },
+    custom11: {
+        title: "语音清晰度训练",
+        bvid: "BV1xi421Y7Fq",
+        description: "提升语音清晰度和准确性"
+    },
+    custom12: {
+        title: "播音综合训练",
+        bvid: "BV1c142187is",
+        description: "播音主持综合技能训练"
+    },
+    custom13: {
+        title: "语音专业技巧",
+        bvid: "BV1aw4m1k7Nx",
+        description: "专业播音语音技巧提升"
+    },
+    custom14: {
+        title: "播音实战练习",
+        bvid: "BV1gF4m1K7vq",
+        description: "播音主持实战练习和应用"
+    },
+    custom15: {
+        title: "播音发声基础",
+        bvid: "BV12b421Y7JC",
+        description: "播音发声基础训练和技巧"
+    },
+    custom16: {
+        title: "语音训练课程",
+        bvid: "BV1Hf42127SU",
+        description: "系统化语音训练课程"
+    },
+    custom17: {
+        title: "播音技巧提升",
+        bvid: "BV12b421e78Q",
+        description: "播音技巧提升和进阶训练"
+    },
+    custom18: {
+        title: "语音表达训练",
+        bvid: "BV1ci421i7Wm",
+        description: "语音表达能力训练"
+    },
+    custom19: {
+        title: "播音节奏训练",
+        bvid: "BV1Si421v7Xd",
+        description: "播音节奏控制和语速训练"
+    },
+    custom20: {
+        title: "语音技巧课程",
+        bvid: "BV1ZS411w7pJ",
+        description: "专业语音技巧课程"
+    },
+    custom21: {
+        title: "播音语调练习",
+        bvid: "BV17Z421M7Fc",
+        description: "播音语调变化练习"
+    },
+    custom22: {
+        title: "语音清晰度课程",
+        bvid: "BV1xi421Y7Fq",
+        description: "语音清晰度提升课程"
+    },
+    custom23: {
+        title: "播音综合课程",
+        bvid: "BV1c142187is",
+        description: "播音主持综合技能课程"
+    },
+    custom24: {
+        title: "语音专业训练",
+        bvid: "BV1yM6BYpEGs",
+        description: "专业语音训练和技巧提升"
+    },
+    custom25: {
+        title: "播音高级课程",
+        bvid: "BV1aw4m1k7Nx",
+        description: "高级播音技巧和实战应用"
+    },
+    custom26: {
+        title: "语音表演技巧",
+        bvid: "BV1Fm4y1H7qw",
+        description: "语音表演技巧和情感表达"
+    },
+    custom27: {
+        title: "播音专业课程",
+        bvid: "BV1uM411U7Ju",
+        description: "专业播音主持课程和技巧训练"
+    },
+    custom28: {
+        title: "播音发声技巧",
+        bvid: "BV1DU4y1L7Ph",
+        description: "播音发声技巧和声音训练"
+    },
+    custom29: {
+        title: "语音表达课程",
+        bvid: "BV1dprYYhEdm",
+        description: "语音表达技巧和播音训练"
+    },
+    custom30: {
+        title: "播音主持进阶",
+        bvid: "BV1YKWMz9EKd",
+        description: "播音主持进阶技巧和专业训练"
+    },
+    custom31: {
+        title: "语音训练实战",
+        bvid: "BV1sWWMzGEHS",
+        description: "语音训练实战练习和技巧应用"
+    },
+    custom32: {
+        title: "播音艺术表现",
+        bvid: "BV1frazzzETz",
+        description: "播音艺术表现技巧和情感传达"
     }
 };
 
